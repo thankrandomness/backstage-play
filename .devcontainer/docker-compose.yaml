@@ -1,0 +1,21 @@
+version: '3.8'
+services:
+  app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ../..:/workspaces:cached # mount the parent directory as a volume inside the container @ /workspaces with caching enabled
+    command: sleep infinity # keep the container running
+    network_mode: service:db # run the app container on the same network as the database service
+  db: 
+    image: postgres:latest
+    restart: unless-stopped
+    volumes:
+      - postgres-data:/var/lib/postgresql/data # mount a volume postgres-data to persist data in the container
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+  volumes:
+    postgres-data: # define a named volume called postgres-data that will be used by the db service to store postgresql data
